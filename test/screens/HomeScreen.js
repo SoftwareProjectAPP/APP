@@ -6,6 +6,8 @@ import styles_trail from "../components/common/button/trailButton.style";
 import styles_Welcome from '../components/home/welcome/welcome.style';
 import { SIZES } from '../constants';
 import { BASE_URL, VARIABLES } from '../constants/config';
+import { add_trail_checklist_data, add_trail_data, setup } from '../constants/database';
+import { download_file_from_url } from '../constants/filestorage';
 
 export default function HomeScreen({navigation}){
     const speak = () => {
@@ -22,6 +24,7 @@ export default function HomeScreen({navigation}){
             if(data["current_version"] == true){
                 console.log("Version match");
             }else{
+                setup();
                 // add to database
                 const new_version = data["new_version"];
                 const trail_list = data["trail_data"];
@@ -30,18 +33,52 @@ export default function HomeScreen({navigation}){
                 VARIABLES.DB_VERSION = new_version;
                 console.log("trail_list =");
                 console.log(trail_list);
-                trail_list.forEach(trail => {
-                    const name = trail["name"];
-                    const image_url = trail["image_URL"];
-                    const audio_url = trail["audio_URL"];
-                    const description = trail["description"];
-                    const mileage = trail["mileage"];
-                    const rating = trail["rating"];
-                    const is_w_a = trail["is_wheelchair_accessible"];
-                    const trail_check_list = trail["trailchecklists"];
-                    trail_check_list.forEach(check => {
-                        const item = check["item"];
+                trail_list.forEach(async function(trail){
+                    console.log("Called on image: " + trail['image_URL']);
+                    var image_url = await download_file_from_url(trail["image_URL"]);
+                    console.log("image_url= ");
+                    console.log(image_url);
+                    if(image_url['success'] === false){
+                        console.log("Error: " + image_url['error']);
+                        throw new Error(image_url['error']);
+                    }
+                    image_url = image_url['uri'];
+                    console.log("Called on audio: " + trail['audio_URL']);
+                    var audio_url = await download_file_from_url(trail["audio_URL"]);
+                    if(audio_url['success'] === false){
+                        console.log("Error: " + audio_url['error']);
+                        throw new Error(audio_url['error']);
+                    }
+                    audio_url = audio_url['uri'];
+
+                    add_trail_data({
+                        id: trail["id"],
+                        name: trail["name"],
+                        description: trail["description"],
+                        mileage: trail["mileage"],
+                        rating: trail["rating"],
+                        is_wheelchair_accessible: trail["is_wheelchair_accessible"],
+                        image_url: image_url,
+                        audio_url: audio_url
+                    },(res)=>{
+                        if(res.success === false)
+                        {
+                            throw new Error(res.error)
+                        }
+                        const trail_check_list = trail["trailchecklists"];
+
+                        trail_check_list.forEach(function(check){
+                            add_trail_checklist_data({
+                                "item": check["item"],
+                                "trailId": trail["id"]
+                            },(res2)=>{
+                                if(res2.success === false){
+                                    throw new Error(res2.error);
+                                }
+                            });
+                        });
                     });
+                    
                 });
             }
         }else{

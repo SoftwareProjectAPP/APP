@@ -1,5 +1,6 @@
 import * as Speech from 'expo-speech';
-import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import React from 'react';
+import { FlatList, Image, Text, TouchableOpacity, View } from 'react-native';
 import { TrailButton } from '../components';
 import { SIZES } from '../constants';
 
@@ -7,18 +8,40 @@ import styles_trail from "../components/common/button/trailButton.style";
 import styles_footer from "../components/common/footer/footer.style";
 import { icons } from "../constants";
 
+import { get_all_trails } from '../constants/database';
+
 
 export default function TrailListpage({navigation}){
+    const [trail_list, setTrailList] = React.useState([]);
+
     const speak = () => {
         const Voice = 'first trail: Lone Star Trail, Second trail: kellys Pond trail, third trail: Lake loop trail, forth trail: Sandy trail, Fifth Trail:Fern trail and Then at the bottom of the page to the left button is the achievements and right button is login page.';
         Speech.speak(Voice);
     }
+
+    React.useEffect(()=>{
+        get_trails();
+    }, []);
+
+    const get_trails = async () => {
+        get_all_trails((d)=>{
+            console.log("d=");
+            console.log(d);
+            if(d["success"] === true)
+            {
+                console.log("called");
+                setTrailList(d['data']);
+            }
+            else{
+                throw new Error(d["error"]);
+            }
+        });
+    }
+
     return(
         <View>
             <View
             />
-                <ScrollView showsVerticalScrollIndicator={false}>
-
                 <View style={{ flex: 1, padding: SIZES.xxLarge, align:'center'}}>
                         <View style={styles_trail.container}>
                             <TouchableOpacity onPress={speak}>
@@ -35,31 +58,24 @@ export default function TrailListpage({navigation}){
                         <View style={styles_trail.container}>
                             <TouchableOpacity
                                 style={styles_trail.applyBtn}
-                                onPress={() => navigation.navigate('LoneStarTrailScreen')}
+                                onPress={() => navigation.navigate('TrailOverviewTemplate')}
                             >
                                 <Text style={styles_trail.applyBtnText}>Lone Star Trail</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
                     
-                    <View style={{ flex: 1, padding: SIZES.xxLarge, align:'center'}}>
-                        <TrailButton text={'Northwest Trail'}/>
-                    </View>
+                    
+                    <FlatList
+                        data={trail_list}
+                        keyExtractor={({id})=>id}
+                        renderItem={({item})=>(
+                            <View style={{ flex: 1, padding: SIZES.xxLarge, align:'center'}}>
+                                <TrailButton text={item.name} trail_id={item.id} navigation={navigation}/>
+                            </View>
+                        )}
+                    />
 
-                    <View style={{ flex: 1, padding: SIZES.xxLarge, align:'center'}}>
-                        <TrailButton text={'Lake Loop Trail'}/>
-                    </View>
-
-                    <View style={{ flex: 1, padding: SIZES.xxLarge, align:'center'}}>
-                        <TrailButton text={'Sandy Trail'}/>
-                    </View>
-
-                    <View style={{ flex: 1, padding: SIZES.xxLarge, align:'center'}}>
-                        <TrailButton text={'Fern Trail'}/>
-                    </View>
-
-
-                </ScrollView>
             <View style={styles_footer.container}>
                 <TouchableOpacity
                     style={styles_footer.achievementBtn}

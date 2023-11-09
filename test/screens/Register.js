@@ -5,9 +5,12 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import CustomButton from '../components/CustomButton';
 import InputField from '../components/InputField';
+import PopupErrorMessage from '../components/popupErrorMessage';
 import { BASE_URL } from '../constants/config';
 
 const Register = ({navigation}) => {
+    const [error_messaged, setErrorMessage] = React.useState('');
+    const [modalVisible, setModalVisible] = React.useState(false);
     const [email, onChangeEmail] = React.useState('');
     const [first_name, onChangeFirstName] = React.useState('');
     const [last_name, onChangeLastName] = React.useState('');
@@ -36,6 +39,30 @@ const Register = ({navigation}) => {
         {
             error_message = "Invalid email. Try Again.";
         }
+        if(first_name === "")
+        {
+            error_message = "Invalid First Name. Try Again.";
+        }
+        if(last_name === "")
+        {
+            error_message = "Invalid Last Name. Try Again.";
+        }
+        if(question1 === "")
+        {
+            error_message = "Invalid question one. Try Again.";
+        }
+        if(question2 === "")
+        {
+            error_message = "Invalid question two. Try Again.";
+        }
+        if(answer1 === "")
+        {
+            error_message = "Invalid answer one. Try Again.";
+        }
+        if(answer2 === "")
+        {
+            error_message = "Invalid answer two. Try Again.";
+        }
         // repeat for all other fields
         if(error_message.length === 0)
         {
@@ -43,6 +70,8 @@ const Register = ({navigation}) => {
         }else{
             // show popup with error message as the contents
             console.log("Error: " + error_message);
+            setErrorMessage(error_message);
+            setModalVisible(true);
         }
         
     }
@@ -69,11 +98,18 @@ const Register = ({navigation}) => {
         }else{
             // pop up
             console.log("Error: " + data["error"]);
+            setErrorMessage(data["error"]);
+            setModalVisible(true);
         }
     }
 
     return (
     <SafeAreaView style={{flex: 1, justifyContent: 'center'}}>
+        <PopupErrorMessage 
+            error_message={error_messaged} 
+            modalVisible={modalVisible} 
+            setModalVisible={setModalVisible} 
+        />
         <View style={{paddingHorizontal: 25}}>
             <View style={{alignItems: 'center'}}>
 

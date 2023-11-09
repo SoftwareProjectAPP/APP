@@ -1,15 +1,12 @@
 import axios from 'axios';
-import React, { useState } from 'react';
-import { StyleSheet, Switch, Text, View } from 'react-native';
-import { COLORS, SIZES } from "../constants";
+import React from 'react';
+import { FlatList, View } from 'react-native';
+import AchievementComponent from '../components/AchievementComponent';
 import { BASE_URL, VARIABLES } from '../constants/config';
 
+// TODO: test and complete screen
+
 const AchievementScreen = () => {
-    const [isEnabled, setIsEnabled] = useState(false);
-    const toggleSwitch = () => setIsEnabled(previousState => !previousState);
-
-    const [achievement_id, setAchievementId] = useState('');
-
     const get_all = async () =>{
         const res = await axios.get(BASE_URL + '/api/achievements/getall',{
             headers: {
@@ -19,10 +16,12 @@ const AchievementScreen = () => {
         const data = res["data"];
         if(data["success"] === true){
             const achievements = data["achievements"];
-            achievements.forEach(row =>{
+            console.log("achievements = ");
+            console.log(achievements);
+            /*achievements.forEach(row =>{
                 const id = row["id"];
                 const title = row["title"];
-            });
+            });*/
         }else{
             // show popup error message
             console.log("Error: " + data["error"]);
@@ -33,28 +32,7 @@ const AchievementScreen = () => {
         get_all();
     }, []);
 
-    const get_user = async () =>{
-        const res = await axios.get(BASE_URL + '/api/achievements/getuser',{
-            headers: {
-                'Authorization': 'bearer ' + VARIABLES.user_token
-            }
-        });
-        const data = res["data"];
-        if(data["success"] === true){
-            const achievements = data["user_achievements"];
-            console.log("achievements");
-            console.log(achievements);
-            achievements.forEach(row =>{
-                const id = row["id"];
-                const title = row["title"];
-            });
-        }else{
-            // show popup error message
-            console.log("Error: " + data["error"]);
-        }
-    }
-
-    const add = async () =>{
+    const add = async (achievement_id) =>{
         const user_data = {
             achievement_id: achievement_id
         };
@@ -73,24 +51,36 @@ const AchievementScreen = () => {
             // show popup
             console.log("Error: " + data["error"]);
         }
+        return true;
     }
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.trail_name}>Trail name</Text>
-        <Switch
-            trackColor={{false: '#767577', true: '#00894C'}}
-            thumbColor={isEnabled ? '#767577' : '#f4f3f4'}
-            ios_backgroundColor="#3e3e3e"
-            onValueChange={toggleSwitch}
-            value={isEnabled}
-            style={{ transform: [{ scaleX: 2 }, { scaleY: 2 }] }}
-        />
+        <View>
+            <FlatList
+                data={[
+                    {
+                        achievement_id: 1,
+                        achievement_name: 'a',
+                        is_enabled: true,
+                    },
+                    {
+                        achievement_id: 3,
+                        achievement_name: 'c',
+                        is_enabled: true,
+                    },
+                    {
+                        achievement_id: 2,
+                        achievement_name: 'b',
+                        is_enabled: false,
+                    }
+                ]}
+                renderItem={({item}) => <AchievementComponent achievement_name={item.achievement_name} achievement_id={item.achievement_id} is_enabled={item.is_enabled} add_achievement_parent={add}/>}
+            />
         </View>
     );
 };
 
-const styles = StyleSheet.create({
+/*const styles = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: 'center',
@@ -102,6 +92,6 @@ const styles = StyleSheet.create({
         textAlign:"center",
         fontWeight: 'bold',
     }
-});
+});*/
 
 export default AchievementScreen;

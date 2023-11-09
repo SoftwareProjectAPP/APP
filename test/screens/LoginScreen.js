@@ -7,6 +7,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import CustomButton from '../components/CustomButton';
 import InputField from '../components/InputField';
 import styles_trail from "../components/common/button/trailButton.style";
+import PopupErrorMessage from '../components/popupErrorMessage';
 import { SIZES } from '../constants';
 import { BASE_URL, VARIABLES } from '../constants/config';
 
@@ -16,6 +17,8 @@ const speak = () => {
 }
 
 const LoginScreen = ({navigation}) => {
+    const [error_messaged, setErrorMessage] = React.useState('');
+    const [modalVisible, setModalVisible] = React.useState(false);
     const [email, onChangeEmail] = React.useState('');
     const [password, onChangePassword] = React.useState('');
 
@@ -35,6 +38,8 @@ const LoginScreen = ({navigation}) => {
         }else{
             // show popup
             console.log("Error: " + error_message);
+            setErrorMessage(error_message);
+            setModalVisible(true);
         }
     }
 
@@ -43,19 +48,27 @@ const LoginScreen = ({navigation}) => {
             email: email,
             password: password
         };
-        const res = await axios.post(BASE_URL + '',user_data);
+        const res = await axios.post(BASE_URL + '/api/authenticate/login',user_data);
         const data = res["data"];
 
         if(data["success"] === true){
             VARIABLES.user_token = data["token"];
+            navigation.navigate('Home');
         }else{
             // show popup
             console.log("Error: " + data["error"]);
+            setErrorMessage(error_message);
+            setModalVisible(true);
         }
     }
 
     return (
     <SafeAreaView style={{flex: 1, justifyContent: 'center'}}>
+        <PopupErrorMessage 
+            error_message={error_messaged} 
+            modalVisible={modalVisible} 
+            setModalVisible={setModalVisible} 
+        />
         <View style={{paddingHorizontal: 25}}>
             <View style={{alignItems: 'left'}}>
             <View style={{ flex: 1, padding: SIZES.xxLarge, align:'center'}}>
@@ -108,7 +121,7 @@ const LoginScreen = ({navigation}) => {
             }
             inputType="password"
             fieldButtonLabel={"Forgot?"}
-            fieldButtonFunction={() => {}}
+            fieldButtonFunction={() => {navigation.navigate('forgot')}}
             textValue={password}
             onChangeTextF={onChangePassword}
         />
