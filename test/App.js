@@ -3,8 +3,10 @@ import HomeScreen from './screens/HomeScreen';
 import LoginScreen from './screens/LoginScreen';
 import LoneStarTrailScreen from './screens/LoneStarTrailScreen';
 import Register from './screens/Register';
+import SecurityQuestionScreen from './screens/SecurityQuestionScreen';
 import SettingPage from './screens/SettingPage';
 import TrailListPage from './screens/TrailListPage';
+import TrailOverviewTemplate from './screens/TrailOverviewTemplate';
 
 
 import { NavigationContainer } from "@react-navigation/native";
@@ -19,7 +21,7 @@ const Stack = createNativeStackNavigator();
 export default function App(){
     return (
     <NavigationContainer>
-        <Stack.Navigator initialRouteName='AchievementScreen'>
+        <Stack.Navigator initialRouteName='Home'>
             <Stack.Screen
                 name="Home"
                 component={HomeScreen}
@@ -72,11 +74,20 @@ export default function App(){
             component={LoneStarTrailScreen}
             options={{headerTitle: 'Lone Star Trail', headerTitleAlign: 'center'}}
             />
-            
+            <Stack.Screen
+            name="TrailOverviewTemplate"
+            component={TrailOverviewTemplate}
+            options={{headerTitle: ""}}
+            />
             <Stack.Screen
             name="Register"
             component={Register}
             options={{headerTitle: ''}}
+            />
+            <Stack.Screen
+                name="forgot"
+                component={SecurityQuestionScreen}
+                options={{headerTitle: ''}}
             />
         </Stack.Navigator>
         </NavigationContainer>
