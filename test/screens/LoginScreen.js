@@ -10,6 +10,7 @@ import styles_trail from "../components/common/button/trailButton.style";
 import PopupErrorMessage from '../components/popupErrorMessage';
 import { SIZES } from '../constants';
 import { BASE_URL, VARIABLES } from '../constants/config';
+import { update_config } from '../constants/database';
 
 const speak = () => {
     const Voice = 'Hi, this is the login screen if you have account please sign in with email first and password next if not then at the bottom of the page press the register but';
@@ -52,6 +53,11 @@ const LoginScreen = ({navigation}) => {
         const data = res["data"];
 
         if(data["success"] === true){
+            const t = await update_config('user_token',data['token']);
+            if(t.success === false)
+            {
+                throw new Error(t.error);
+            }
             VARIABLES.user_token = data["token"];
             navigation.navigate('Home');
         }else{
@@ -64,10 +70,10 @@ const LoginScreen = ({navigation}) => {
 
     return (
     <SafeAreaView style={{flex: 1, justifyContent: 'center'}}>
-        <PopupErrorMessage 
-            error_message={error_messaged} 
-            modalVisible={modalVisible} 
-            setModalVisible={setModalVisible} 
+        <PopupErrorMessage
+            error_message={error_messaged}
+            modalVisible={modalVisible}
+            setModalVisible={setModalVisible}
         />
         <View style={{paddingHorizontal: 25}}>
             <View style={{alignItems: 'left'}}>

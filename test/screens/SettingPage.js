@@ -1,26 +1,38 @@
+import axios from 'axios';
+import { View } from 'react-native';
+import CustomButton from '../components/CustomButton';
+import { BASE_URL, VARIABLES } from '../constants/config';
+import { update_config } from '../constants/database';
 
-/*
-options={{
-            headerStyle:{backgroundColor: COLORS.lightWhite},
-            headerShadowVisible: false,
-            headerLeft: () => (
-                <ScreenHeaderBtn1 iconUrl={icons.left} dimension= "90%"/> //back arrow button
-            ),
-            headerRight: () => (
-                <ScreenHeaderBtn1 iconUrl={icons.speaker} dimension="80%"/> //speaker button read off what on the screen
-            ),
-            headerTitle: "Setting",
-            headerTitleAlign: 'center',
-        }}
-*/
-
-import { Text, View } from 'react-native';
-
-export default function SettingPage(){
-//<SafeAreaView style={{flex: 1, backgroundColor: COLORS.lightGreen}}> </SafeAreaView>
+const SettingPage = ({navigation}) => {
+    const send_data = async () =>{
+        console.log("token = ");
+        console.log(VARIABLES.user_token);
+        const res = await axios.get(BASE_URL + '/api/authenticate/logout',{
+            headers: {
+                'Authorization': 'bearer ' + VARIABLES.user_token
+            }
+        });
+        const data = res['data'];
+        console.log("data = " );
+        console.log(data);
+        if(data['success'] === true)
+        {
+            const t = await update_config('user_token','');
+            if(t.success){
+                VARIABLES.user_token = '';
+            }else{
+                throw new Error(t.error);
+            }
+        }else{
+            console.log("Error: " + data['error']);
+        }
+    }
     return (
-        <View style={{marginTop:'60%',marginLeft:'35%'}}>
-            <Text>to be announced</Text>
+        <View>
+            <CustomButton label={"Logout"} onPress={() => {send_data()}} />
         </View>
-    )
-}
+    );
+};
+
+export default SettingPage;

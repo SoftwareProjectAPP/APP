@@ -1,18 +1,16 @@
 import * as Speech from 'expo-speech';
 import React from 'react';
-import { FlatList, Image, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Image, StyleSheet, Text, View } from 'react-native';
 import { get_checklist_for_trail, get_trail_by_id } from '../constants/database';
 
 import { VARIABLES } from '../constants/config';
 
-// TODO: fix and test scren completely
-
 const TrailOverviewTemplate = ({navigation}) => {
-    const [description, onChangeDescription] = React.useState('TBD');
-    const [image_url, onChangeImageURL] = React.useState('TBD');
-    const [mileage, onChangeMileage] = React.useState(0.0);
-    const [rating, onChangeRating] = React.useState(0);
-    const [trail_check_list, onChangeTrailCheckList] = React.useState([]);
+    const [description, setDescription] = React.useState('TBD');
+    const [image_url, setImageURL] = React.useState('TBD');
+    const [mileage, setMileage] = React.useState('');
+    const [rating, setRating] = React.useState('');
+    const [trail_check_list, setTrailCheckList] = React.useState([]);
 
     const speak = () => {
         const Voice = 'Audio from database';
@@ -20,22 +18,36 @@ const TrailOverviewTemplate = ({navigation}) => {
     }
 
     const get_trail_data = async () =>{
-        const res = get_trail_by_id(VARIABLES.trail_id);
-        if(res.success === true)
-        {
-            console.log(res.data);
-            const res2 = get_checklist_for_trail(VARIABLES.trail_id);
-            if(res2.success === true)
-            {
-                // navigation.setOptions({title: trail_title});
-                // onChangeTrailCheckList(trail_check_list);
-                console.log(res2.data);
+        const t = await get_trail_by_id(VARIABLES.trail_id);
+
+        console.log("t=");
+        console.log(t);
+
+        if(t.success === false){
+            throw new Error(t.error);
+        }else{
+            console.log("trail_data = ")
+            console.log(t.data[0]);
+
+            const trail_data = t.data[0];
+
+            setDescription(trail_data.description);
+            setImageURL(trail_data.image_URL);
+            setMileage(trail_data.mileage);
+            setRating(trail_data.rating);
+            //setAudioURL(trail_data.audio_URL);
+            //setIsWheelChairAccessible(trail_data.is_wheelchair_accessible);
+            const trail_name = trail_data.name;
+            navigation.setOptions({headerTitle: trail_name});
+
+            const t2 = await get_checklist_for_trail(VARIABLES.trail_id);
+            if(t2.success === false){
+                throw new Error(t2.error);
             }else{
-                throw new Error(res.error);
+                console.log("trail_check_list = ");
+                console.log(t2.data);
+                setTrailCheckList(t2.data);
             }
-        }
-        else{
-            throw new Error(res.error);
         }
     }
 
@@ -83,7 +95,7 @@ const TrailOverviewTemplate = ({navigation}) => {
             justifyContent: 'center',
             fontSize: 16,
             fontWeight: 'bold',
-            textAlignmentsVertical: 'top'
+            //textAlignmentsVertical: 'top'
         },
         Ratingtext: {
             textAlign: 'left',
@@ -91,7 +103,7 @@ const TrailOverviewTemplate = ({navigation}) => {
             justifyContent: 'center',
             fontSize: 16,
             fontWeight: 'bold',
-            textAlignmentsVertical: 'bottom'
+            //textAlignmentsVertical: 'bottom'
         },
         DescriptionText:
         {
@@ -99,7 +111,7 @@ const TrailOverviewTemplate = ({navigation}) => {
             justifyContent: 'center',
             fontSize: 12,
             padding: 2,
-            textAlignmentsVertical: 'top'
+            //textAlignmentsVertical: 'top'
         },
         CheckListText:
         {
@@ -107,7 +119,7 @@ const TrailOverviewTemplate = ({navigation}) => {
             justifyContent: 'center',
             fontSize: 12,
             padding: 2,
-            textAlignmentsVertical: 'top'
+            //textAlignmentsVertical: 'top'
         },
         CheckListHeader:
         {
@@ -116,13 +128,12 @@ const TrailOverviewTemplate = ({navigation}) => {
             fontSize: 16,
             fontWeight: 'bold',
             padding: 2,
-            textAlignmentsVertical: 'top'
+            //textAlignmentsVertical: 'top'
         }
     });
 
     return(
         <View style={{height:'100%'}}>
-            <ScrollView showsVerticalScrollIndicator={false}>
                 <View >
                     <View>
                         <View>
@@ -132,7 +143,7 @@ const TrailOverviewTemplate = ({navigation}) => {
                                 style={{width: 400, height: 150, }}
                             />
                         </View>
-                        {image_url}
+                        <Text>{image_url}</Text>
                         <View style = {{width: 400, height: 20, }} >
                         </View>
             
@@ -150,7 +161,7 @@ const TrailOverviewTemplate = ({navigation}) => {
                         resizeMode='cover'
                         style={{width: '100%', height: '100%', }}
                     />
-                    {image_url}
+                    <Text>{image_url}</Text>
                 </View>
 
                 <View style={boxStyles.box}>
@@ -172,7 +183,6 @@ const TrailOverviewTemplate = ({navigation}) => {
             </View>
         </View>
     </View>
-</ScrollView>
 </View>
 )
 };

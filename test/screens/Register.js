@@ -105,10 +105,10 @@ const Register = ({navigation}) => {
 
     return (
     <SafeAreaView style={{flex: 1, justifyContent: 'center'}}>
-        <PopupErrorMessage 
-            error_message={error_messaged} 
-            modalVisible={modalVisible} 
-            setModalVisible={setModalVisible} 
+        <PopupErrorMessage
+            error_message={error_messaged}
+            modalVisible={modalVisible}
+            setModalVisible={setModalVisible}
         />
         <View style={{paddingHorizontal: 25}}>
             <View style={{alignItems: 'center'}}>

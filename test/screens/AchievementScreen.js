@@ -4,9 +4,8 @@ import { FlatList, View } from 'react-native';
 import AchievementComponent from '../components/AchievementComponent';
 import { BASE_URL, VARIABLES } from '../constants/config';
 
-// TODO: test and complete screen
-
 const AchievementScreen = () => {
+    const [achievement_list, setAchievementList] = React.useState([]);
     const get_all = async () =>{
         const res = await axios.get(BASE_URL + '/api/achievements/getall',{
             headers: {
@@ -14,14 +13,22 @@ const AchievementScreen = () => {
             }
         });
         const data = res["data"];
+        console.log("data = ");
+        console.log(data);
         if(data["success"] === true){
-            const achievements = data["achievements"];
+            var achievements = data["user_achievements"][0];
             console.log("achievements = ");
             console.log(achievements);
-            /*achievements.forEach(row =>{
-                const id = row["id"];
-                const title = row["title"];
-            });*/
+            var test = []
+            for(const key in achievements){
+                if(achievements.hasOwnProperty(key)){
+                    test.push({
+                        'title': key,
+                        'is_enabled': achievements[key]
+                    });
+                }
+            }
+            setAchievementList(test);
         }else{
             // show popup error message
             console.log("Error: " + data["error"]);
@@ -32,49 +39,44 @@ const AchievementScreen = () => {
         get_all();
     }, []);
 
-    const add = async (achievement_id) =>{
+    const add = async (achievement_name) =>{
+        console.log("add called");
+        console.log("achievement_name = ");
+        console.log(achievement_name);
         const user_data = {
-            achievement_id: achievement_id
+            achievement_name: achievement_name
         };
-        const res = await axios.post(BASE_URL + '',{
+        console.log("user_token = ");
+        console.log(VARIABLES.user_token);
+        const res = await axios.post(BASE_URL + "/api/achievements/add",user_data,{
             headers: {
                 'Authorization': 'bearer ' + VARIABLES.user_token
             }
         });
+        console.log("res = ");
+        console.log(res);
         const data = res["data"];
+
+        console.log("data = ");
+        console.log(data);
 
         if(data["success"] === true){
             // show popup
             console.log("add successful");
+            return true;
             // change achievement to "true"
         }else{
             // show popup
             console.log("Error: " + data["error"]);
+            return false;
         }
-        return true;
     }
 
     return (
         <View>
             <FlatList
-                data={[
-                    {
-                        achievement_id: 1,
-                        achievement_name: 'a',
-                        is_enabled: true,
-                    },
-                    {
-                        achievement_id: 3,
-                        achievement_name: 'c',
-                        is_enabled: true,
-                    },
-                    {
-                        achievement_id: 2,
-                        achievement_name: 'b',
-                        is_enabled: false,
-                    }
-                ]}
-                renderItem={({item}) => <AchievementComponent achievement_name={item.achievement_name} achievement_id={item.achievement_id} is_enabled={item.is_enabled} add_achievement_parent={add}/>}
+                data={achievement_list}
+                renderItem={({item}) => <AchievementComponent achievement_name={item.title} is_enabled={item.is_enabled} add_achievement_parent={add}/>}
             />
         </View>
     );

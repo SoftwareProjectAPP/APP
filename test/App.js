@@ -8,7 +8,6 @@ import SettingPage from './screens/SettingPage';
 import TrailListPage from './screens/TrailListPage';
 import TrailOverviewTemplate from './screens/TrailOverviewTemplate';
 
-
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 //import React from 'react';
@@ -37,7 +36,7 @@ export default function App(){
                         </TouchableOpacity>
                     ),
                     headerRight: () => (
-                        <TouchableOpacity style={styles.btnContainer} onPress={()=>navigation.navigate('settingpage')}>
+                        <TouchableOpacity style={styles.btnContainer} onPress={()=>navigation.navigate('SettingPage')}>
                             <Image
                             source={require('./assets/icons/setting.png')}
                             resizeMode="cover"
@@ -54,7 +53,7 @@ export default function App(){
             />
             
             <Stack.Screen
-            name="settingpage"
+            name="SettingPage"
             component={SettingPage}
             options={{headerTitle: 'Setting', headerTitleAlign: 'center'}}
             />

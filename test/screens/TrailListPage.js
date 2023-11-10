@@ -24,18 +24,12 @@ export default function TrailListpage({navigation}){
     }, []);
 
     const get_trails = async () => {
-        get_all_trails((d)=>{
-            console.log("d=");
-            console.log(d);
-            if(d["success"] === true)
-            {
-                console.log("called");
-                setTrailList(d['data']);
-            }
-            else{
-                throw new Error(d["error"]);
-            }
-        });
+        const t = await get_all_trails();
+        if(t.success){
+            setTrailList(t.data);
+        }else{
+            throw new Error(t.error);
+        }
     }
 
     return(
