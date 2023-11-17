@@ -8,7 +8,6 @@ import SettingPage from './screens/SettingPage';
 import TrailListPage from './screens/TrailListPage';
 import TrailOverviewTemplate from './screens/TrailOverviewTemplate';
 
-
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 //import React from 'react';
@@ -18,10 +17,15 @@ import styles from './components/common/header/screenheader.style';
 
 const Stack = createNativeStackNavigator();
 
+// TODO: add audio support
+// TODO: get the audio button on the overall trail page
+// TODO: get the audio record for the audio button
+
+// register all pages you can navigate to and initial route
 export default function App(){
     return (
     <NavigationContainer>
-        <Stack.Navigator initialRouteName='Home'>
+        <Stack.Navigator screenOptions={{contentStyle:{backgroundColor:'#F5F5F5'}}} initialRouteName='Home'>
             <Stack.Screen
                 name="Home"
                 component={HomeScreen}
@@ -37,7 +41,7 @@ export default function App(){
                         </TouchableOpacity>
                     ),
                     headerRight: () => (
-                        <TouchableOpacity style={styles.btnContainer} onPress={()=>navigation.navigate('settingpage')}>
+                        <TouchableOpacity style={styles.btnContainer} onPress={()=>navigation.navigate('SettingPage')}>
                             <Image
                             source={require('./assets/icons/setting.png')}
                             resizeMode="cover"
@@ -48,41 +52,41 @@ export default function App(){
                 })}
             />
             <Stack.Screen
-            name="trailListpage"
-            component={TrailListPage}
-            options={{headerTitle: ''}}
+                name="trailListpage"
+                component={TrailListPage}
+                options={{headerTitle: ''}}
             />
             
             <Stack.Screen
-            name="settingpage"
-            component={SettingPage}
-            options={{headerTitle: 'Setting', headerTitleAlign: 'center'}}
+                name="SettingPage"
+                component={SettingPage}
+                options={{headerTitle: 'Setting', headerTitleAlign: 'center'}}
             />
             
             <Stack.Screen
-            name="LoginScreen"
-            component={LoginScreen}
-            options={{headerTitle: ''}}
+                name="LoginScreen"
+                component={LoginScreen}
+                options={{headerTitle: ''}}
             />
             <Stack.Screen
-            name="AchievementScreen"
-            component={AchievementScreen}
-            options={{headerTitle: 'Achievements', headerTitleAlign: 'center'}}
+                name="AchievementScreen"
+                component={AchievementScreen}
+                options={{headerTitle: 'Achievements', headerTitleAlign: 'center'}}
             />
             <Stack.Screen
-            name="LoneStarTrailScreen"
-            component={LoneStarTrailScreen}
-            options={{headerTitle: 'Lone Star Trail', headerTitleAlign: 'center'}}
+                name="LoneStarTrailScreen"
+                component={LoneStarTrailScreen}
+                options={{headerTitle: 'Lone Star Trail', headerTitleAlign: 'center'}}
             />
             <Stack.Screen
-            name="TrailOverviewTemplate"
-            component={TrailOverviewTemplate}
-            options={{headerTitle: ""}}
+                name="TrailOverviewTemplate"
+                component={TrailOverviewTemplate}
+                options={{headerTitle: ""}}
             />
             <Stack.Screen
-            name="Register"
-            component={Register}
-            options={{headerTitle: ''}}
+                name="Register"
+                component={Register}
+                options={{headerTitle: ''}}
             />
             <Stack.Screen
                 name="forgot"
@@ -94,3 +98,13 @@ export default function App(){
     );
 };
 
+/*
+trail:
+    INSERT INTO trail(image_URL, audio_URL, name, description, mileage, rating, is_wheelchair_accessible) VALUES();
+
+get trail id:
+    SELECT * FROM trail;
+
+trailchecklists:
+    INSERT INTO trailchecklists(item, trail_id, trailId) VALUES();
+*/

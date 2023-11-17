@@ -1,97 +1,162 @@
 import axios from 'axios';
 import React from 'react';
-import { FlatList, View } from 'react-native';
+import { ActivityIndicator, FlatList, Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import AchievementComponent from '../components/AchievementComponent';
+import styles_trail from "../components/common/button/trailButton.style";
+import PopupErrorMessage from '../components/popupErrorMessage';
+import { SIZES } from '../constants';
 import { BASE_URL, VARIABLES } from '../constants/config';
-
-// TODO: test and complete screen
+import { speak_data } from '../constants/text_to_speech';
 
 const AchievementScreen = () => {
+    // state variables for error modal and loading
+    const [achievement_list, setAchievementList] = React.useState([]);
+    const [error_messaged, setErrorMessage] = React.useState('');
+    const [modalVisible, setModalVisible] = React.useState(false);
+    const [isScreenLoading, setScreenLoading] = React.useState(false);
+
+    const show_error = (error_message) => {
+        // hide loading icon
+        setScreenLoading(false);
+        // show popup
+        console.log("Error: " + error_message);
+        setErrorMessage(error_message);
+        setModalVisible(true);
+        throw new Error(error_message);
+    }
+
+    // get all achievements from server
     const get_all = async () =>{
-        const res = await axios.get(BASE_URL + '/api/achievements/getall',{
-            headers: {
-                'Authorization': 'bearer ' + VARIABLES.user_token
+        try{
+            // make GET request with authorization header
+            const res = await axios.get(BASE_URL + '/api/achievements/getall',{
+                headers: {
+                    'Authorization': 'bearer ' + VARIABLES.user_token
+                }
+            });
+            // get response from server
+            const data = res["data"];
+            console.log("data = ");
+            console.log(data);
+            // check if response worked
+            if(data["success"] === true){
+                // get achievements
+                var achievements = data["user_achievements"][0];
+                console.log("achievements = ");
+                console.log(achievements);
+                // encode achievements into achievement list
+                var test = []
+                for(const key in achievements){
+                    if(achievements.hasOwnProperty(key)){
+                        test.push({
+                            'title': key,
+                            'is_enabled': achievements[key]
+                        });
+                    }
+                }
+                setAchievementList(test);
+            }else{
+                // show popup error message
+                show_error(data['error']);
             }
-        });
-        const data = res["data"];
-        if(data["success"] === true){
-            const achievements = data["achievements"];
-            console.log("achievements = ");
-            console.log(achievements);
-            /*achievements.forEach(row =>{
-                const id = row["id"];
-                const title = row["title"];
-            });*/
-        }else{
-            // show popup error message
-            console.log("Error: " + data["error"]);
+        }catch(error){
+            show_error(error);
         }
     }
 
+    // call function when screen is loaded
     React.useEffect(()=>{
         get_all();
     }, []);
 
-    const add = async (achievement_id) =>{
-        const user_data = {
-            achievement_id: achievement_id
-        };
-        const res = await axios.post(BASE_URL + '',{
-            headers: {
-                'Authorization': 'bearer ' + VARIABLES.user_token
-            }
-        });
-        const data = res["data"];
+    // add achievements
+    const add = async (achievement_name) =>{
+        try{
+            console.log("add called");
+            console.log("achievement_name = ");
+            console.log(achievement_name);
+            // encode data
+            const user_data = {
+                achievement_name: achievement_name
+            };
+            console.log("user_token = ");
+            console.log(VARIABLES.user_token);
+            // make POST request with authorization header
+            const res = await axios.post(BASE_URL + "/api/achievements/add",user_data,{
+                headers: {
+                    'Authorization': 'bearer ' + VARIABLES.user_token
+                }
+            });
+            console.log("res = ");
+            console.log(res);
+            // get response from server
+            const data = res["data"];
 
-        if(data["success"] === true){
-            // show popup
-            console.log("add successful");
-            // change achievement to "true"
-        }else{
-            // show popup
-            console.log("Error: " + data["error"]);
+            console.log("data = ");
+            console.log(data);
+
+            // check if response worked
+            if(data["success"] === true){
+                // show popup
+                console.log("add successful");
+                return true;
+                // change achievement to "true"
+            }else{
+                // show popup
+                show_error(data['error']);
+                return false;
+            }
+        }catch(error){
+            show_error(error);
+            return false;
         }
-        return true;
     }
+
+    // text to speech
+    const speak = () => {
+        const voice = 'Hello, This is the achievements Screen please login before using this screen. If login please mark off any trails you have completed.';
+        speak_data(voice);
+    }
+    //This is the style for the pop ups and loading sign
+    const styles_Times = StyleSheet.create({
+        container: {
+            flex: 1,
+            justifyContent: 'center',
+        },
+        horizontal: {
+            flexDirection: 'row',
+            justifyContent: 'space-around',
+            padding: 10,
+        },
+    });
 
     return (
         <View>
+            <View style={[styles_Times.container, styles_Times.horizontal]}>
+                {isScreenLoading && <ActivityIndicator />}
+                <PopupErrorMessage
+                    error_message={error_messaged}
+                    modalVisible={modalVisible}
+                    setModalVisible={setModalVisible}
+                />
+            </View>
+            <View style={{ flex: 1, padding: SIZES.xxLarge, align:'center'}}>
+                <View style={styles_trail.container}>
+                    <TouchableOpacity onPress={speak}>
+                        <Image
+                            source={require('../assets/icons/speaker.png')}
+                            resizeMode="cover"
+                            style={{width: 60, height: 60}}
+                        />
+                    </TouchableOpacity>
+                </View>
+            </View>
             <FlatList
-                data={[
-                    {
-                        achievement_id: 1,
-                        achievement_name: 'a',
-                        is_enabled: true,
-                    },
-                    {
-                        achievement_id: 3,
-                        achievement_name: 'c',
-                        is_enabled: true,
-                    },
-                    {
-                        achievement_id: 2,
-                        achievement_name: 'b',
-                        is_enabled: false,
-                    }
-                ]}
-                renderItem={({item}) => <AchievementComponent achievement_name={item.achievement_name} achievement_id={item.achievement_id} is_enabled={item.is_enabled} add_achievement_parent={add}/>}
+                data={achievement_list}
+                renderItem={({item}) => <AchievementComponent achievement_name={item.title} is_enabled={item.is_enabled} add_achievement_parent={add}/>}
             />
         </View>
     );
 };
-
-/*const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    trail_name:{
-        fontSize: SIZES.xLarge,
-        color: COLORS.secondary,
-        textAlign:"center",
-        fontWeight: 'bold',
-    }
-});*/
 
 export default AchievementScreen;

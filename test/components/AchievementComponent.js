@@ -4,7 +4,6 @@ import { COLORS, SIZES } from "../constants";
 
 export default function AchievementComponent({
     achievement_name,
-    achievement_id,
     add_achievement_parent,
     is_enabled
 }){
@@ -12,7 +11,7 @@ export default function AchievementComponent({
     const toggleSwitch = async () => {
         if(isEnabled === false)
         {
-            if(await add_achievement_parent(achievement_id) === true)
+            if(await add_achievement_parent(achievement_name) === true)
             {
                 is_enabled=true;
                 setIsEnabled(true);

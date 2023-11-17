@@ -19,7 +19,7 @@ export default function PopupErrorMessage({
           borderRadius: 20,
           padding: 35,
           alignItems: 'center',
-          shadowColor: '#000',
+          shadowColor: '#00894C',
           shadowOffset: {
             width: 0,
             height: 2,
@@ -34,13 +34,13 @@ export default function PopupErrorMessage({
           elevation: 2,
         },
         buttonOpen: {
-          backgroundColor: '#F194FF',
+          backgroundColor: '#F5F5F5',
         },
         buttonClose: {
-          backgroundColor: '#2196F3',
+          backgroundColor: '#00894C',
         },
         textStyle: {
-          color: 'white',
+          color: 'White',
           fontWeight: 'bold',
           textAlign: 'center',
         },
