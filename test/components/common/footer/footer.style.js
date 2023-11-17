@@ -5,7 +5,7 @@ import { COLORS, SIZES } from "../../../constants";
 const styles_footer = StyleSheet.create({
   container: {
     position: "absolute",
-    bottom: -320,
+    bottom: -300,
     left: 0,
     right: 0,
     padding: SIZES.small,

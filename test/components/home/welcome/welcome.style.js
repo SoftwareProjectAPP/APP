@@ -8,7 +8,7 @@ const styles_Welcome= StyleSheet.create({
     },
     welcomeMessage:{
         fontSize: SIZES.xLarge,
-        color: COLORS.secondary,
+        color: COLORS.black,
         textAlign:"center",
         fontWeight: 'bold',
     }

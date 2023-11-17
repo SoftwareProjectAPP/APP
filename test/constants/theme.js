@@ -2,7 +2,10 @@ const COLORS = {
     primary: "#45631f",
     secondary: "#444262",
     tertiary: "#FF7754",
+
+    black: "#000000",
     
+    darkGreen: "#478D04",
     mediumGreen: "#00894C",
     lightGreen: "#A6FFD1",
 
