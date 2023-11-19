@@ -69,6 +69,7 @@ export default function TrailListpage({navigation}){
     });
 
     return(
+        
         <View>
             <View style={[styles_Times.container, styles_Times.horizontal]}>
                 {isScreenLoading && <ActivityIndicator />}
@@ -78,8 +79,8 @@ export default function TrailListpage({navigation}){
                     setModalVisible={setModalVisible}
                 />
             </View>
-            <View
-            />
+            <View/>
+
                 <View style={{ flex: 1, padding: SIZES.xxLarge, align:'center'}}>
                         <View style={styles_trail.container}>
                             <TouchableOpacity onPress={speak}>
@@ -108,18 +109,18 @@ export default function TrailListpage({navigation}){
                     style={styles_footer.achievementBtn}
                     onPress={() => navigation.navigate('AchievementScreen')}>
                         <Image
-                            source={icons.trophyIcon} //Change to the trophy
+                            source={icons.trophyIcon}
                             resizeMode='contain'
-                            style={styles_footer.likeBtnImage}
+                            style={styles_footer.trophyBtnImage}
                         />
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                    style={styles_footer.applyBtn}
+                    style={styles_footer.ApplyBtn}
                     onPress={() => navigation.navigate('LoginScreen')}
                 >
-                <Text style={styles_footer.applyBtnText}>Login</Text>
-                </TouchableOpacity>
+                <Text style={styles_footer.ApplyBtnText}>Login</Text> 
+                </TouchableOpacity> 
             </View>
         </View>
     )
