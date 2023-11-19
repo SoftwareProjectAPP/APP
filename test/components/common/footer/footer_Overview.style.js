@@ -24,12 +24,12 @@ const styles_footer_trail = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
     },
-    likeBtnImage: {
+    BtnImage: {
         width: "60%",
         height: "60%",
         tintColor: COLORS.white,
     },
-    applyBtn: {
+    ApplyBtn: {
         flex: 1,
         backgroundColor: "#00894C",
         height: "100%",
@@ -38,7 +38,7 @@ const styles_footer_trail = StyleSheet.create({
         marginLeft: SIZES.medium,
         borderRadius: SIZES.medium,
     },
-    applyBtnText: {
+    ApplyBtnText: {
         fontSize: SIZES.xLarge,
         color: COLORS.white,
     },

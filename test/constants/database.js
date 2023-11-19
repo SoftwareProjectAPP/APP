@@ -3,6 +3,53 @@ import { VARIABLES } from './config';
 
 const db = SQLite.openDatabase('db.testDb');
 
+// get trail parking pictures
+async function get_trail_parking_data(trail_id){
+    try{
+        console.log("get trail parking data by id");
+        // sql statement to get trail data
+        const st = 'SELECT name, image_URL3, image_URL4, image_URL5 FROM trail WHERE id=' + trail_id;
+        return new Promise((resolve,reject)=>{
+            // execute sql statement
+            db.exec([{sql: st, args:[]}],true,(err,res)=>{
+                // check if error
+                if(err){
+                    console.log("error: ");
+                    console.log(err);
+                    return reject({
+                        success: false,
+                        error: err
+                    })
+                }
+
+                if(res[0].error){
+                    console.log("error: ");
+                    console.log(res[0].error);
+                    return reject({
+                        success: false,
+                        error: res[0].error
+                    })
+                }
+                console.log("res = ");
+                console.log(res[0]['rows']);
+
+                // return trail data
+                resolve({
+                    success: true,
+                    data: res[0]["rows"]
+                });
+            });
+        });
+    }catch(error){
+        console.log("Error: ");
+        console.log(error);
+        return {
+            success: false,
+            error: error
+        }
+    }
+}
+
 // setup db_version, user_token, trail_id
 async function setup_variables(){
     try{
@@ -773,7 +820,7 @@ async function get_trail_by_id(trail_id) {
     try{
         console.log("get trail by id");
         // sql statement to get trail data
-        const st = 'SELECT name, description, mileage, rating, is_wheelchair_accessible, image_URL, audio_URL FROM trail WHERE id=' + trail_id;
+        const st = 'SELECT name, description, mileage, rating, is_wheelchair_accessible, image_URL,image_URL2, audio_URL FROM trail WHERE id=' + trail_id;
         return new Promise((resolve,reject)=>{
             // execute sql statement
             db.exec([{sql: st, args:[]}],true,(err,res)=>{
@@ -865,6 +912,6 @@ async function get_checklist_for_trail(trail_id) {
 export {
     add_trail_checklist_data,
     add_trail_data, get_all_trails, get_checklist_for_trail, get_config_item, get_trail_by_id,
-    setup, setup_config, update_config
+    setup, setup_config, update_config, get_trail_parking_data
 };
 

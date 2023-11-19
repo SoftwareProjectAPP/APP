@@ -7,7 +7,6 @@ import { icons } from '../constants';
 import { VARIABLES } from '../constants/config';
 import { get_checklist_for_trail, get_trail_by_id } from '../constants/database';
 import { speak_data } from '../constants/text_to_speech';
-
 //Audio urls
 //images urls
 
@@ -16,15 +15,14 @@ const TrailOverviewTemplate = ({navigation}) => {
     const [description, setDescription] = React.useState('TBD');
     const [image_url, setImageURL] = React.useState('TBD');
     const [image_url2, setImageURL2] = React.useState('TBD');
-    const [image_url3, setImageURL3] = React.useState('TBD');
-    const [image_url4, setImageURL4] = React.useState('TBD');
-    const [image_url5, setImageURL5] = React.useState('TBD');
     const [mileage, setMileage] = React.useState('');
     const [rating, setRating] = React.useState('');
     const [trail_check_list, setTrailCheckList] = React.useState([]);
     const [is_wheelchair_accessible, setIsWheelChairAccessible] = React.useState('');
     const [audio_url, setAudioURL] = React.useState();
-
+    
+    
+    let wheelchair_access_icon = is_wheelchair_accessible ? icons.accessibility : icons.notaccessibility
     // loading and error state variables
     const [isScreenLoading, setScreenLoading] = React.useState(false);
     const [error_messaged, setErrorMessage] = React.useState('');
@@ -33,7 +31,7 @@ const TrailOverviewTemplate = ({navigation}) => {
     // reads speech data
     const speak = () => {
         // data to read
-        const voice = 'Hello, Welcome to TrailBlazer your Hiking Companion!';
+        const voice = 'Hello, Welcome to TrailBlazer your Hiking Companion!'; //think we can take out
         speak_data(voice);
     }
 
@@ -54,6 +52,20 @@ const TrailOverviewTemplate = ({navigation}) => {
         setModalVisible(true);
         throw new Error(error_message);
     }
+
+    const diffuculty_rating = (rating) => {
+        let table = []
+        
+        for(let i = 0; i < rating; i++)
+        {
+            
+            table.push(<Image source={icons.hikingman} style={{height: 25, width: 25, resizeMode: 'contain'}}/>)
+        }
+
+        return table
+    }
+
+    
 
     // get trail data from local database
     const get_trail_data = async () =>{
@@ -79,9 +91,6 @@ const TrailOverviewTemplate = ({navigation}) => {
                 setDescription(trail_data.description);
                 setImageURL(trail_data.image_URL);
                 setImageURL2(trail_data.image_URL2);
-                setImageURL3(trail_data.image_URL3);
-                setImageURL4(trail_data.image_URL4);
-                setImageURL5(trail_data.image_URL5);
                 setMileage(trail_data.mileage);
                 setRating(trail_data.rating);
                 console.log("audio_URL = " + trail_data.audio_URL);
@@ -257,9 +266,21 @@ const TrailOverviewTemplate = ({navigation}) => {
                         <View style={boxStyles.box}>
                             <View style={boxStyles.innerSmall}>
                                 <Text style={boxStyles.Mileagetext}>Mileage: {mileage} </Text>
-                                <View style = {{width:'100%', height: 30}}/>
-                                <Text style={boxStyles.Ratingtext}>Rating: {rating} </Text>
-                                <Text style={boxStyles.Wheelechairtext}>Wheelchair: {is_wheelchair_accessible} </Text>
+                                <View style = {{width:'100%', height: 20}}/>
+                                
+                                <Text style={boxStyles.Ratingtext}>Difficulty:</Text>
+                                <View style={{display: 'flex', flexDirection: 'row'}}>
+                                    {diffuculty_rating(rating).map((n) => {
+                                        return(
+                                            n
+                                        );
+                                    })}
+                                </View>
+                                
+                                
+                                <View style = {{width:'100%', height: 20}}/>
+                                <Image source={wheelchair_access_icon} style={{width:40, height:40}}/>
+                                    
                             </View>
                         </View>
                         <View style={boxStyles.boxTransparent}>
@@ -271,9 +292,10 @@ const TrailOverviewTemplate = ({navigation}) => {
                         </View>
                     </View>
                 </View>
-                <View style ={{width: 400, height:100}}>
-                </View>
+            <View style ={{width: 400, height:100}}>
+            </View>
             </ScrollView>
+
             <View style={styles_footer_trail.container}>
                 <TouchableOpacity
                     style={styles_footer_trail.audioBtn}
@@ -281,15 +303,15 @@ const TrailOverviewTemplate = ({navigation}) => {
                         <Image
                             source={icons.speaker} //Change to the speaker
                             resizeMode='contain'
-                            style={styles_footer_trail.likeBtnImage}
+                            style={styles_footer_trail.BtnImage}
                         />
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                    style={styles_footer_trail.applyBtn}
-                    onPress={() => navigation.navigate('')}
+                    style={styles_footer_trail.ApplyBtn}
+                    onPress={() => navigation.navigate("parking")}
                 >
-                <Text style={styles_footer_trail.applyBtnText}>Parking & TrailHead</Text>
+                <Text style={styles_footer_trail.ApplyBtnText}>Parking & TrailHead</Text>
                 </TouchableOpacity>
             </View>
         </View>

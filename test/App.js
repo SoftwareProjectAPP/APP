@@ -7,6 +7,7 @@ import SecurityQuestionScreen from './screens/SecurityQuestionScreen';
 import SettingPage from './screens/SettingPage';
 import TrailListPage from './screens/TrailListPage';
 import TrailOverviewTemplate from './screens/TrailOverviewTemplate';
+import ParkingScreen from './screens/ParkingScreen';
 
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -91,6 +92,11 @@ export default function App(){
             <Stack.Screen
                 name="forgot"
                 component={SecurityQuestionScreen}
+                options={{headerTitle: ''}}
+            />
+            <Stack.Screen
+                name="parking"
+                component={ParkingScreen}
                 options={{headerTitle: ''}}
             />
         </Stack.Navigator>
