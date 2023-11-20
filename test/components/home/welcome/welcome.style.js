@@ -11,6 +11,12 @@ const styles_Welcome= StyleSheet.create({
         color: COLORS.black,
         textAlign:"center",
         fontWeight: 'bold',
+    },
+    pictureTitle:{
+        fontSize: SIZES.medium,
+        color: COLORS.black,
+        textAlign:"center",
+        fontWeight: 'bold',
     }
 });
 

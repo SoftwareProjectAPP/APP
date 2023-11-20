@@ -226,6 +226,8 @@ export default function HomeScreen({navigation}){
             <Overlay
                 visible={modalVisible}
                 onClose={()=>{setModalVisible(false);}}
+                containerStyle={{backgroundColor: 'rgba(90, 90, 90, 0.5)'}}
+                childrenWrapperStyle={{backgroundColor: '#fff'}}
                 closeOnTouchOutside
             >
                 <Text>{error_message_title}</Text>

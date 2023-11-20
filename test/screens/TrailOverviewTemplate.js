@@ -233,6 +233,8 @@ const TrailOverviewTemplate = ({navigation}) => {
             <Overlay
                 visible={modalVisible}
                 onClose={()=>{setModalVisible(false);}}
+                containerStyle={{backgroundColor: 'rgba(90, 90, 90, 0.5)'}}
+                childrenWrapperStyle={{backgroundColor: '#fff'}}
                 closeOnTouchOutside
             >
                 <Text>{error_message_title}</Text>
@@ -264,9 +266,9 @@ const TrailOverviewTemplate = ({navigation}) => {
                         </View>
                         <View style={boxStyles.boxTransparent}>
                             <Image
-                                source ={{uri: image_url}}
+                                source ={{uri: image_url2}}
                                 resizeMode='cover'
-                                style={{width: '100%', height: '95%', }}
+                                style={{width: 200, height: 350, }}
                             />
                         </View>
                         <View style={boxStyles.box}>
@@ -282,7 +284,7 @@ const TrailOverviewTemplate = ({navigation}) => {
                                     scrollEnabled={false}
                                     horizontal={true}
                                 />
-                                <Image source={wheelchair_access_icon} style={{width:40,marginBottom:10, height:40}}/>
+                                <Image source={wheelchair_access_icon} style={{width:40, marginBottom:10, height:40}}/>
                                     
                             </View>
                         </View>

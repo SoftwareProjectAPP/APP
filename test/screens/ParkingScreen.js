@@ -4,6 +4,7 @@ import { VARIABLES } from '../constants/config';
 import { get_trail_parking_data } from '../constants/database';
 import Spinner from 'react-native-loading-spinner-overlay';
 import Overlay from 'react-native-modal-overlay';
+import styles_Welcome from '../components/home/welcome/welcome.style';
 
 export  default function ParkingScreen({navigation}){
     // state variables
@@ -85,6 +86,8 @@ export  default function ParkingScreen({navigation}){
             <Overlay
                 visible={modalVisible}
                 onClose={()=>{setModalVisible(false);}}
+                containerStyle={{backgroundColor: 'rgba(90, 90, 90, 0.5)'}}
+                childrenWrapperStyle={{backgroundColor: '#fff'}}
                 closeOnTouchOutside
             >
                 <Text>{error_message_title}</Text>
@@ -97,30 +100,30 @@ export  default function ParkingScreen({navigation}){
                     textStyle={{color:'#FFF'}}
                 />
             </View>
-            <Text>Map</Text>
+            <Text style={styles_Welcome.pictureTitle}>Map</Text>
             <View>
                 <Image
                     source ={{uri: image_url3}}
                     resizeMode='cover'
-                    style={{width: 400, height: 200, }}
+                    style={{width: 400, height: 200}}
                 />
             </View>
     
-            <Text>Parking</Text>
+            <Text style={styles_Welcome.pictureTitle}>Parking</Text>
             <View>
                 <Image
                     source ={{uri: image_url4}}
                     resizeMode='cover'
-                    style={{width: 400, height: 200, }}
+                    style={{width: 400, height: 200}}
                 />
             </View>
             
-            <Text>Trail Head</Text>
+            <Text style={styles_Welcome.pictureTitle}>Trailhead</Text>
             <View>
                 <Image
                     source ={{uri: image_url5}}
                     resizeMode='cover'
-                    style={{width: 400, height: 200, }}
+                    style={{width: 400, height: 250}}
                 />
             </View>
         </View>

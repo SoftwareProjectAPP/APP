@@ -17,9 +17,6 @@ import styles from './components/common/header/screenheader.style';
 
 const Stack = createNativeStackNavigator();
 
-// TODO: add style to titles in parking screen
-// TODO: add style to error message popup
-
 // register all pages you can navigate to and initial route
 export default function App(){
     return (
@@ -97,7 +94,7 @@ export default function App(){
     );
 };
 
-/*
+/* For adding info to server:
 trail:
     INSERT INTO trail(image_URL, audio_URL, name, description, mileage, rating, is_wheelchair_accessible) VALUES();
 
