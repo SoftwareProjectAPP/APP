@@ -1,20 +1,22 @@
 import axios from 'axios';
 import React from 'react';
-import { ActivityIndicator, Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import CustomButton from '../components/CustomButton';
 import InputField from '../components/InputField';
 import styles_trail from "../components/common/button/trailButton.style";
-import PopupErrorMessage from '../components/popupErrorMessage';
 import { SIZES } from '../constants';
 import { BASE_URL, VARIABLES } from '../constants/config';
 import { update_config } from '../constants/database';
 import { speak_data } from '../constants/text_to_speech';
+import Spinner from 'react-native-loading-spinner-overlay';
+import Overlay from 'react-native-modal-overlay';
 
 const LoginScreen = ({navigation}) => {
     // state variables
     const [error_messaged, setErrorMessage] = React.useState('');
+    const [error_message_title, setErrorMessageTitle] = React.useState('');
     const [modalVisible, setModalVisible] = React.useState(false);
     const [email, onChangeEmail] = React.useState('');
     const [password, onChangePassword] = React.useState('');
@@ -28,13 +30,13 @@ const LoginScreen = ({navigation}) => {
     }
 
     const show_error = (error_message) => {
+        setErrorMessageTitle('Error');
         // hide loading icon
         setScreenLoading(false);
         // show popup
         console.log("Error: " + error_message);
         setErrorMessage(error_message);
         setModalVisible(true);
-        throw new Error(error_message);
     }
 
     // validates email and password requirements
@@ -117,6 +119,14 @@ const LoginScreen = ({navigation}) => {
     //This is the layout of the Login Screen
     return (
     <SafeAreaView style={{flex: 1, justifyContent: 'center'}}>
+        <Overlay
+            visible={modalVisible}
+            onClose={()=>{setModalVisible(false);}}
+            closeOnTouchOutside
+        >
+            <Text>{error_message_title}</Text>
+            <Text>{error_messaged}</Text>
+        </Overlay>
         <View style={{paddingHorizontal: 25}}>
             <View style={{alignItems: 'left'}}>
                 <View style={{ flex: 1, padding: SIZES.xxLarge, align:'center'}}>
@@ -132,11 +142,10 @@ const LoginScreen = ({navigation}) => {
                 </View>
             </View>
             <View style={[styles_Times.container, styles_Times.horizontal]}>
-                {isScreenLoading && <ActivityIndicator />}
-                <PopupErrorMessage
-                    error_message={error_messaged}
-                    modalVisible={modalVisible}
-                    setModalVisible={setModalVisible}
+                <Spinner
+                    visible={isScreenLoading}
+                    textContent={'Loading...'}
+                    textStyle={{color:'#FFF'}}
                 />
             </View>
             <Text

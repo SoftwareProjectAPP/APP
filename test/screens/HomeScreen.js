@@ -1,29 +1,31 @@
 import axios from 'axios';
 import * as React from 'react';
-import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import styles_trail from "../components/common/button/trailButton.style";
 import styles_Welcome from '../components/home/welcome/welcome.style';
-import PopupErrorMessage from '../components/popupErrorMessage';
 import { SIZES } from '../constants';
 import { BASE_URL, VARIABLES } from '../constants/config';
 import { add_trail_checklist_data, add_trail_data, setup, setup_config, update_config } from '../constants/database';
 import { download_file_from_url } from '../constants/filestorage';
 import { speak_data } from '../constants/text_to_speech';
+import Overlay from 'react-native-modal-overlay';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 export default function HomeScreen({navigation}){
     // state variables (used for error messages and loading)
     const [isScreenLoading, setScreenLoading] = React.useState(false);
     const [error_messaged, setErrorMessage] = React.useState('');
     const [modalVisible, setModalVisible] = React.useState(false);
+    const [error_message_title, setErrorMessageTitle] = React.useState('');
 
     const show_error = (error_message) => {
+        setErrorMessageTitle(error_message_title);
         // hide loading icon
         setScreenLoading(false);
         // show popup
         console.log("Error: " + error_message);
         setErrorMessage(error_message);
         setModalVisible(true);
-        throw new Error(error_message);
     }
 
     // reads speech data
@@ -221,37 +223,42 @@ export default function HomeScreen({navigation}){
     //This is the layout of the HomeScreen
     return (
         <View>
+            <Overlay
+                visible={modalVisible}
+                onClose={()=>{setModalVisible(false);}}
+                closeOnTouchOutside
+            >
+                <Text>{error_message_title}</Text>
+                <Text>{error_messaged}</Text>
+            </Overlay>
             <View style={[styles_Times.container, styles_Times.horizontal]}>
-                {isScreenLoading && <ActivityIndicator />}
-                <PopupErrorMessage
-                    error_message={error_messaged}
-                    modalVisible={modalVisible}
-                    setModalVisible={setModalVisible}
+                <Spinner
+                    visible={isScreenLoading}
+                    textContent={'Loading...'}
+                    textStyle={{color:'#FFF'}}
                 />
             </View>
             <ScrollView>
                 <View>
-                    <View>
-                        <View style={{ flex: 1, padding: SIZES.xxLarge, align:'center'}}>
-                            <View style={styles_trail.container}>
-                                <TouchableOpacity onPress={speak}>
-                                    <Image
-                                        source={require('../assets/icons/speaker.png')}
-                                        resizeMode="cover"
-                                        style={{width: 60, height: 60}}
-                                    />
-                                </TouchableOpacity>
-                            </View>
+                    <View style={{ flex: 1, padding: SIZES.xxLarge, align:'center'}}>
+                        <View style={styles_trail.container}>
+                            <TouchableOpacity onPress={speak}>
+                                <Image
+                                    source={require('../assets/icons/speaker.png')}
+                                    resizeMode="cover"
+                                    style={{width: 60, height: 60}}
+                                />
+                            </TouchableOpacity>
                         </View>
-                        <Text style={styles_Welcome.welcomeMessage}>
-                            Welcome to TrailBlazer your Hiking Companion!
-                        </Text>
-                        <Image
-                            source ={{uri:'https://storage.googleapis.com/trailblazerdata/MapHomeScreen.jpg'}}
-                            resizeMode='cover'
-                            style={{width: 400, height: 300, }}
-                        />
                     </View>
+                    <Text style={styles_Welcome.welcomeMessage}>
+                        Welcome to TrailBlazer your Hiking Companion!
+                    </Text>
+                    <Image
+                        source ={{uri:'https://storage.googleapis.com/trailblazerdata/MapHomeScreen.jpg'}}
+                        resizeMode='cover'
+                        style={{width: 400, height: 300, }}
+                    />
                 </View>
             </ScrollView>
         </View>

@@ -1,16 +1,18 @@
 import axios from 'axios';
 import React from 'react';
-import { ActivityIndicator, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import CustomButton from '../components/CustomButton';
 import InputField from '../components/InputField';
-import PopupErrorMessage from '../components/popupErrorMessage';
 import { BASE_URL } from '../constants/config';
+import Spinner from 'react-native-loading-spinner-overlay';
+import Overlay from 'react-native-modal-overlay';
 
 const Register = ({navigation}) => {
     // state variables
     const [error_messaged, setErrorMessage] = React.useState('');
+    const [error_message_title, setErrorMessageTitle] = React.useState('');
     const [modalVisible, setModalVisible] = React.useState(false);
     const [email, onChangeEmail] = React.useState('');
     const [first_name, onChangeFirstName] = React.useState('');
@@ -24,13 +26,13 @@ const Register = ({navigation}) => {
     const [isScreenLoading, setScreenLoading] = React.useState(false);
 
     const show_error = (error_message) => {
+        setErrorMessageTitle('Error');
         // hide loading icon
         setScreenLoading(false);
         // show popup
         console.log("Error: " + error_message);
         setErrorMessage(error_message);
         setModalVisible(true);
-        throw new Error(error_message);
     }
 
     // check if password meet complexity requirements
@@ -148,12 +150,19 @@ const Register = ({navigation}) => {
     //This is the layout of the Register Screen
     return (
         <SafeAreaView style={{flex: 1, justifyContent: 'center'}}>
+            <Overlay
+                visible={modalVisible}
+                onClose={()=>{setModalVisible(false);}}
+                closeOnTouchOutside
+            >
+                <Text>{error_message_title}</Text>
+                <Text>{error_messaged}</Text>
+            </Overlay>
             <View style={[styles_Times.container,styles_Times.horizontal]}>
-                {isScreenLoading && <ActivityIndicator />}
-                <PopupErrorMessage
-                    error_message={error_messaged}
-                    modalVisible={modalVisible}
-                    setModalVisible={setModalVisible}
+                <Spinner
+                    visible={isScreenLoading}
+                    textContent={'Loading...'}
+                    textStyle={{color:'#FFF'}}
                 />
             </View>
             <ScrollView>

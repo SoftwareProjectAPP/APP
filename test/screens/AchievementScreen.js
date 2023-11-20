@@ -1,12 +1,13 @@
 import axios from 'axios';
 import React from 'react';
-import { ActivityIndicator, FlatList, Image, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { FlatList, Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import AchievementComponent from '../components/AchievementComponent';
 import styles_trail from "../components/common/button/trailButton.style";
-import PopupErrorMessage from '../components/popupErrorMessage';
 import { SIZES } from '../constants';
 import { BASE_URL, VARIABLES } from '../constants/config';
 import { speak_data } from '../constants/text_to_speech';
+import Spinner from 'react-native-loading-spinner-overlay';
+import Overlay from 'react-native-modal-overlay';
 
 const AchievementScreen = () => {
     // state variables for error modal and loading
@@ -14,6 +15,7 @@ const AchievementScreen = () => {
     const [error_messaged, setErrorMessage] = React.useState('');
     const [modalVisible, setModalVisible] = React.useState(false);
     const [isScreenLoading, setScreenLoading] = React.useState(false);
+    const [error_message_title,setErrorMessageTitle] = React.useState('');
 
     const show_error = (error_message) => {
         // hide loading icon
@@ -22,7 +24,7 @@ const AchievementScreen = () => {
         console.log("Error: " + error_message);
         setErrorMessage(error_message);
         setModalVisible(true);
-        throw new Error(error_message);
+        setErrorMessageTitle('Error');
     }
 
     // get all achievements from server
@@ -132,12 +134,19 @@ const AchievementScreen = () => {
 
     return (
         <View>
+            <Overlay
+                visible={modalVisible}
+                onClose={()=>{setModalVisible(false);}}
+                closeOnTouchOutside
+            >
+                <Text>{error_message_title}</Text>
+                <Text>{error_messaged}</Text>
+            </Overlay>
             <View style={[styles_Times.container, styles_Times.horizontal]}>
-                {isScreenLoading && <ActivityIndicator />}
-                <PopupErrorMessage
-                    error_message={error_messaged}
-                    modalVisible={modalVisible}
-                    setModalVisible={setModalVisible}
+                <Spinner
+                    visible={isScreenLoading}
+                    textContent={'Loading...'}
+                    textStyle={{color:'#FFF'}}
                 />
             </View>
             <View style={{ flex: 1, padding: SIZES.xxLarge, align:'center'}}>

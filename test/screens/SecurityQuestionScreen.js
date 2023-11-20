@@ -1,12 +1,12 @@
 import axios from 'axios';
 import React from 'react';
-import { ActivityIndicator, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import CustomButton from '../components/CustomButton';
 import InputField from '../components/InputField';
-import PopupErrorMessage from '../components/popupErrorMessage';
 import { BASE_URL } from '../constants/config';
+import Overlay from 'react-native-modal-overlay';
 
 const SecurityQuestionScreen = ({navigation}) => {
     // state vriables
@@ -20,16 +20,17 @@ const SecurityQuestionScreen = ({navigation}) => {
     const [should_change_password, setShouldChangePassword] = React.useState(false);
     const [isScreenLoading, setScreenLoading] = React.useState(false);
     const [error_messaged, setErrorMessage] = React.useState('');
+    const [error_message_title, setErrorMessageTitle] = React.useState('');
     const [modalVisible, setModalVisible] = React.useState(false);
 
     const show_error = (error_message) => {
+        setErrorMessageTitle('Error');
         // hide loading icon
         setScreenLoading(false);
         // show popup
         console.log("Error: " + error_message);
         setErrorMessage(error_message);
         setModalVisible(true);
-        throw new Error(error_message);
     }
 
     // check if password meets complexity requirements
@@ -175,14 +176,21 @@ const SecurityQuestionScreen = ({navigation}) => {
 
     return (
     <SafeAreaView style={{flex: 1, justifyContent: 'center'}}>
+        <Overlay
+            visible={modalVisible}
+            onClose={()=>{setModalVisible(false);}}
+            closeOnTouchOutside
+        >
+            <Text>{error_message_title}</Text>
+            <Text>{error_messaged}</Text>
+        </Overlay>
         <View style={{paddingHorizontal: 25}}>
             <View style={{alignItems: 'center'}}>
                 <View style={[styles_Times.container,styles_Times.horizontal]}>
-                    {isScreenLoading && < ActivityIndicator size="large" color="#00894C" />}
-                    <PopupErrorMessage
-                    error_message={error_messaged}
-                    modalVisible={modalVisible}
-                    setModalVisible={setModalVisible}
+                    <Spinner
+                        visible={isScreenLoading}
+                        textContent={'Loading...'}
+                        textStyle={{color:'#FFF'}}
                     />
                 </View>
             </View>

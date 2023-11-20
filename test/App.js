@@ -1,7 +1,6 @@
 import AchievementScreen from './screens/AchievementScreen';
 import HomeScreen from './screens/HomeScreen';
 import LoginScreen from './screens/LoginScreen';
-import LoneStarTrailScreen from './screens/LoneStarTrailScreen';
 import Register from './screens/Register';
 import SecurityQuestionScreen from './screens/SecurityQuestionScreen';
 import SettingPage from './screens/SettingPage';
@@ -18,9 +17,8 @@ import styles from './components/common/header/screenheader.style';
 
 const Stack = createNativeStackNavigator();
 
-// TODO: add audio support
-// TODO: get the audio button on the overall trail page
-// TODO: get the audio record for the audio button
+// TODO: add style to titles in parking screen
+// TODO: add style to error message popup
 
 // register all pages you can navigate to and initial route
 export default function App(){
@@ -73,11 +71,6 @@ export default function App(){
                 name="AchievementScreen"
                 component={AchievementScreen}
                 options={{headerTitle: 'Achievements', headerTitleAlign: 'center'}}
-            />
-            <Stack.Screen
-                name="LoneStarTrailScreen"
-                component={LoneStarTrailScreen}
-                options={{headerTitle: 'Lone Star Trail', headerTitleAlign: 'center'}}
             />
             <Stack.Screen
                 name="TrailOverviewTemplate"

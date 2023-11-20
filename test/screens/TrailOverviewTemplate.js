@@ -1,14 +1,12 @@
 import { Audio } from 'expo-av';
 import React from 'react';
-import { ActivityIndicator, FlatList, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import styles_footer_trail from '../components/common/footer/footer_Overview.style';
-import PopupErrorMessage from '../components/popupErrorMessage';
 import { icons } from '../constants';
 import { VARIABLES } from '../constants/config';
 import { get_checklist_for_trail, get_trail_by_id } from '../constants/database';
-import { speak_data } from '../constants/text_to_speech';
-//Audio urls
-//images urls
+import Spinner from 'react-native-loading-spinner-overlay';
+import Overlay from 'react-native-modal-overlay';
 
 const TrailOverviewTemplate = ({navigation}) => {
     // state variables
@@ -16,24 +14,17 @@ const TrailOverviewTemplate = ({navigation}) => {
     const [image_url, setImageURL] = React.useState('TBD');
     const [image_url2, setImageURL2] = React.useState('TBD');
     const [mileage, setMileage] = React.useState('');
-    const [rating, setRating] = React.useState('');
     const [trail_check_list, setTrailCheckList] = React.useState([]);
     const [is_wheelchair_accessible, setIsWheelChairAccessible] = React.useState('');
     const [audio_url, setAudioURL] = React.useState();
-    
+    const [rating_list, setRatingList] = React.useState([]);
     
     let wheelchair_access_icon = is_wheelchair_accessible ? icons.accessibility : icons.notaccessibility
     // loading and error state variables
     const [isScreenLoading, setScreenLoading] = React.useState(false);
     const [error_messaged, setErrorMessage] = React.useState('');
     const [modalVisible, setModalVisible] = React.useState(false);
-
-    // reads speech data
-    const speak = () => {
-        // data to read
-        const voice = 'Hello, Welcome to TrailBlazer your Hiking Companion!'; //think we can take out
-        speak_data(voice);
-    }
+    const [error_message_title, setErrorMessageTitle] = React.useState('');
 
     // play audio data in audio_url
     const play_audio_data = async () =>{
@@ -44,25 +35,32 @@ const TrailOverviewTemplate = ({navigation}) => {
 
     // show error message
     const show_error = (error_message) => {
+        setErrorMessageTitle('Error');
         // hide loading icon
         setScreenLoading(false);
         // show popup
         console.log("Error: " + error_message);
         setErrorMessage(error_message);
         setModalVisible(true);
-        throw new Error(error_message);
     }
 
+    // generate difficulty rating images
     const diffuculty_rating = (rating) => {
+        // empty table
         let table = []
         
+        // add items to table (JSON encoded to make sure key is unique)
         for(let i = 0; i < rating; i++)
         {
-            
-            table.push(<Image source={icons.hikingman} style={{height: 25, width: 25, resizeMode: 'contain'}}/>)
+            // push items to lsit
+            table.push({
+                id: i,
+                item: 'a'
+            });
         }
 
-        return table
+        // add items to rating list so it is loaded by flatlist
+        setRatingList(table);
     }
 
     
@@ -92,7 +90,8 @@ const TrailOverviewTemplate = ({navigation}) => {
                 setImageURL(trail_data.image_URL);
                 setImageURL2(trail_data.image_URL2);
                 setMileage(trail_data.mileage);
-                setRating(trail_data.rating);
+                diffuculty_rating(trail_data.rating);
+                // trail_data.rating
                 console.log("audio_URL = " + trail_data.audio_URL);
                 setAudioURL(trail_data.audio_URL);
                 setIsWheelChairAccessible(trail_data.is_wheelchair_accessible);
@@ -231,12 +230,19 @@ const TrailOverviewTemplate = ({navigation}) => {
 
     return(
         <View style={{flex: 1}}>
+            <Overlay
+                visible={modalVisible}
+                onClose={()=>{setModalVisible(false);}}
+                closeOnTouchOutside
+            >
+                <Text>{error_message_title}</Text>
+                <Text>{error_messaged}</Text>
+            </Overlay>
             <View style={[styles_Times.container, styles_Times.horizontal]}>
-                {isScreenLoading && <ActivityIndicator />}
-                <PopupErrorMessage
-                    error_message={error_messaged}
-                    modalVisible={modalVisible}
-                    setModalVisible={setModalVisible}
+                <Spinner
+                    visible={isScreenLoading}
+                    textContent={'Loading...'}
+                    textStyle={{color:'#FFF'}}
                 />
             </View>
             <ScrollView contentContainerStyle={{flexGrow: 1, paddingBottom: 20}}>
@@ -269,17 +275,14 @@ const TrailOverviewTemplate = ({navigation}) => {
                                 <View style = {{width:'100%', height: 20}}/>
                                 
                                 <Text style={boxStyles.Ratingtext}>Difficulty:</Text>
-                                <View style={{display: 'flex', flexDirection: 'row'}}>
-                                    {diffuculty_rating(rating).map((n) => {
-                                        return(
-                                            n
-                                        );
-                                    })}
-                                </View>
-                                
-                                
-                                <View style = {{width:'100%', height: 20}}/>
-                                <Image source={wheelchair_access_icon} style={{width:40, height:40}}/>
+                                <FlatList
+                                    data={rating_list}
+                                    keyExtractor={(item,index)=>item.id}
+                                    renderItem={({item})=><Image source={icons.hikingman} style={{height: 25, width: 25, resizeMode: 'contain'}}/>}
+                                    scrollEnabled={false}
+                                    horizontal={true}
+                                />
+                                <Image source={wheelchair_access_icon} style={{width:40,marginBottom:10, height:40}}/>
                                     
                             </View>
                         </View>
@@ -287,7 +290,9 @@ const TrailOverviewTemplate = ({navigation}) => {
                             <Text style={boxStyles.CheckListHeader}>Checklist</Text>
                             <FlatList
                                 data={trail_check_list}
-                                renderItem={({item})=><Text style={boxStyles.CheckListText}>{item.item}</Text>}
+                                keyExtractor={(item,index)=>item.id}
+                                renderItem={({item})=><Text key={item.id} style={boxStyles.CheckListText}>{item.item}</Text>}
+                                scrollEnabled={false}
                             />
                         </View>
                     </View>

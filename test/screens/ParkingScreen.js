@@ -1,9 +1,9 @@
 import React from 'react';
-import { ActivityIndicator, Image,Text, Scrollview, StyleSheet, View } from 'react-native';
-import PopupErrorMessage from '../components/popupErrorMessage';
+import { Image,Text, Scrollview, StyleSheet, View } from 'react-native';
 import { VARIABLES } from '../constants/config';
 import { get_trail_parking_data } from '../constants/database';
-import { speak_data } from '../constants/text_to_speech';
+import Spinner from 'react-native-loading-spinner-overlay';
+import Overlay from 'react-native-modal-overlay';
 
 export  default function ParkingScreen({navigation}){
     // state variables
@@ -15,23 +15,17 @@ export  default function ParkingScreen({navigation}){
     const [isScreenLoading, setScreenLoading] = React.useState(false);
     const [error_messaged, setErrorMessage] = React.useState('');
     const [modalVisible, setModalVisible] = React.useState(false);
-
-    // reads speech data
-    const speak = () => {
-        // data to read
-        const voice = 'Hello, Welcome to TrailBlazer your Hiking Companion!'; //think we can take out
-        speak_data(voice);
-    }
+    const [error_message_title, setErrorMessageTitle] = React.useState('');
 
     // show error message
     const show_error = (error_message) => {
+        setErrorMessageTitle('Error');
         // hide loading icon
         setScreenLoading(false);
         // show popup
         console.log("Error: " + error_message);
         setErrorMessage(error_message);
         setModalVisible(true);
-        throw new Error(error_message);
     }
 
     // get trail parking data from local database
@@ -88,14 +82,22 @@ export  default function ParkingScreen({navigation}){
 
     return(
         <View>
+            <Overlay
+                visible={modalVisible}
+                onClose={()=>{setModalVisible(false);}}
+                closeOnTouchOutside
+            >
+                <Text>{error_message_title}</Text>
+                <Text>{error_messaged}</Text>
+            </Overlay>
             <View style={[styles_Times.container, styles_Times.horizontal]}>
-                {isScreenLoading && <ActivityIndicator />}
-                <PopupErrorMessage
-                    error_message={error_messaged}
-                    modalVisible={modalVisible}
-                    setModalVisible={setModalVisible}
+                <Spinner
+                    visible={isScreenLoading}
+                    textContent={'Loading...'}
+                    textStyle={{color:'#FFF'}}
                 />
             </View>
+            <Text>Map</Text>
             <View>
                 <Image
                     source ={{uri: image_url3}}
@@ -103,10 +105,8 @@ export  default function ParkingScreen({navigation}){
                     style={{width: 400, height: 200, }}
                 />
             </View>
-
-            <View style ={{width: '100%', height: 20}}>
-            </View>
-
+    
+            <Text>Parking</Text>
             <View>
                 <Image
                     source ={{uri: image_url4}}
@@ -114,10 +114,8 @@ export  default function ParkingScreen({navigation}){
                     style={{width: 400, height: 200, }}
                 />
             </View>
-
-            <View style ={{width: '100%', height: 20}}>
-            </View>
             
+            <Text>Trail Head</Text>
             <View>
                 <Image
                     source ={{uri: image_url5}}

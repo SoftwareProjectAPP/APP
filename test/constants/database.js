@@ -867,7 +867,7 @@ async function get_checklist_for_trail(trail_id) {
     try{
         // sql statement to select item from trailchecklist that matches id
         console.log("get checklist for trail called");
-        const st = 'SELECT item FROM trailchecklist WHERE trailId=' + trail_id;
+        const st = 'SELECT id,item FROM trailchecklist WHERE trailId=' + trail_id;
         return new Promise((resolve,reject)=>{
             // execute statement
             db.exec([{sql: st, args:[]}],true,(err,res)=>{
