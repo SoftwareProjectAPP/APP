@@ -9,7 +9,7 @@
 
 ## Installation
 
-# First download the Andriod emulator 
+# First download the Android emulator 
 1. Go to https://developer.android.com/studio then download Android Studio
 2. Once Android Studio is installed on the computer the homepage will pop up
 3. Click on 'More Actions' then go to 'Virtual Device Manager'
